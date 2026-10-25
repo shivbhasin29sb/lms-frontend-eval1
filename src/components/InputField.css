@@ -1,0 +1,108 @@
+/* ============================================================
+   InputField.css — Controlled input component styles
+   ============================================================ */
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* ── Label ── */
+.input-field__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clr-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.input-field__required {
+  color: var(--clr-error);
+}
+
+/* ── Wrapper (for icon + input + toggle) ── */
+.input-field__wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Icon ── */
+.input-field__icon {
+  position: absolute;
+  left: 0.85rem;
+  font-size: 1rem;
+  pointer-events: none;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+/* ── Input ── */
+.input-field__input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  color: var(--clr-text-primary);
+  font-size: 0.95rem;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+  outline: none;
+}
+
+.input-field__input--has-icon {
+  padding-left: 2.6rem;
+}
+
+.input-field__input:focus {
+  border-color: var(--clr-accent-1);
+  background: rgba(124, 58, 237, 0.06);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+}
+
+.input-field__input::placeholder {
+  color: var(--clr-text-muted);
+}
+
+/* ── Error state ── */
+.input-field--error .input-field__input {
+  border-color: var(--clr-error);
+}
+
+.input-field--error .input-field__input:focus {
+  border-color: var(--clr-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+}
+
+/* ── Password toggle ── */
+.input-field__toggle {
+  position: absolute;
+  right: 0.85rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.6;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  transition: opacity var(--transition-fast);
+  line-height: 1;
+}
+
+.input-field__toggle:hover {
+  opacity: 1;
+}
+
+/* ── Error message ── */
+.input-field__error {
+  font-size: 0.78rem;
+  color: #fca5a5;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.1rem;
+  animation: fadeInUp 0.15s ease forwards;
+}
