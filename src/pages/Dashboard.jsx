@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import LessonNotes from '../components/LessonNotes';
 import useFetch from '../hooks/useFetch';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from "../context/AuthContext";
 import './Dashboard.css';
 
 // --- NEW FIREBASE IMPORTS ---
