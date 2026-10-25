@@ -3,6 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 import VideoPlayer from '../components/VideoPlayer';
 import CourseCard from '../components/CourseCard';
 import useFetch from '../hooks/useFetch';
+
+// --- NEW FIREBASE IMPORTS ---
+import { auth, db } from '../firebase/firebaseConfig';
+import { doc, setDoc, getDoc, arrayUnion } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+// ----------------------------
+
 import './CoursePage.css';
 
 // ── Mock curriculum lessons ───────────────────────────────────
@@ -22,10 +29,6 @@ function generateCurriculum(lessonCount) {
   }));
 }
 
-/**
- * CoursePage — Dynamic route: /course/:id
- * Fetches all courses, finds the matching one by :id param.
- */
 function CoursePage() {
   const { id } = useParams();
   const { data: courses, loading, error } = useFetch('/data/data.json');
@@ -37,22 +40,50 @@ function CoursePage() {
     return courses.find(c => c.id === id) ?? null;
   }, [courses, id]);
 
-  // Check enrollment status when the course loads
+  // --- NEW FIREBASE: Check enrollment status from the Cloud ---
   useEffect(() => {
-    if (course) {
-      const storedEnrolled = JSON.parse(localStorage.getItem('enrolledCourses')) || [];
-      setIsEnrolled(storedEnrolled.includes(course.id));
-    }
+    if (!course) return;
+
+    // Listen for the logged-in user
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userRef = doc(db, 'users', user.uid);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.enrolledCourses && data.enrolledCourses.includes(course.id)) {
+            setIsEnrolled(true);
+          }
+        }
+      } else {
+        setIsEnrolled(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, [course]);
 
-  // Handle enrolling in the course
-  const handleEnroll = () => {
+  // --- NEW FIREBASE: Save enrollment to the Cloud ---
+  const handleEnroll = async () => {
     if (!course) return;
-    const storedEnrolled = JSON.parse(localStorage.getItem('enrolledCourses')) || [];
-    if (!storedEnrolled.includes(course.id)) {
-      const updated = [...storedEnrolled, course.id];
-      localStorage.setItem('enrolledCourses', JSON.stringify(updated));
+
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please log in at the top right to enroll in this course!");
+      return;
+    }
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      // setDoc with merge:true creates the document if it doesn't exist yet
+      await setDoc(userRef, {
+        enrolledCourses: arrayUnion(course.id)
+      }, { merge: true });
+
       setIsEnrolled(true);
+    } catch (error) {
+      console.error("Firebase write error:", error);
+      alert("Failed to save to database. Check console.");
     }
   };
 
@@ -198,11 +229,11 @@ function CoursePage() {
                   </li>
                 ))}
               </ul>
-              
+
               {/* Dynamic Enroll Button */}
               {isEnrolled ? (
-                <button 
-                  className="enroll-card__btn" 
+                <button
+                  className="enroll-card__btn"
                   type="button"
                   style={{ backgroundColor: '#10b981', color: '#fff', cursor: 'default' }}
                   disabled
@@ -210,8 +241,8 @@ function CoursePage() {
                   ✓ Enrolled — Continue Learning
                 </button>
               ) : (
-                <button 
-                  className="enroll-card__btn" 
+                <button
+                  className="enroll-card__btn"
                   type="button"
                   onClick={handleEnroll}
                 >
