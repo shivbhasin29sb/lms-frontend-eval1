@@ -1,70 +1,99 @@
-import React, { useState } from 'react';
+import { useState, useRef } from 'react';
+import './VideoPlayer.css';
 
-export default function VideoPlayer({ videoUrl, title }) {
-  // Full 10-lesson syllabus matching your curriculum
-  const lessons = [
-    { id: 1, title: 'Introduction & Setup', videoUrl: videoUrl || 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    { id: 2, title: 'Core Concepts & Architecture', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    { id: 3, title: 'Deep Dive: Part 1', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    { id: 4, title: 'Deep Dive: Part 2', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    { id: 5, title: 'Practical Project', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    { id: 6, title: 'Advanced Techniques', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    { id: 7, title: 'Real-World Patterns', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    { id: 8, title: 'Performance & Optimization', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    { id: 9, title: 'Testing', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    { id: 10, title: 'Deployment & CI/CD', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' }
-  ];
+/**
+ * VideoPlayer — Renders a responsive YouTube iframe embed.
+ * Props:
+ *   videoUrl   {string}  — YouTube embed URL
+ *   title      {string}  — Video/course title shown in controls bar
+ *   courseId   {string}  — Used for bookmarking state (localStorage key)
+ */
+function VideoPlayer({ videoUrl, title, courseId }) {
+  const [isBookmarked, setIsBookmarked] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('lms_bookmarks') || '[]');
+      return saved.includes(courseId);
+    } catch {
+      return false;
+    }
+  });
 
-  const [activeVideo, setActiveVideo] = useState(lessons[0].videoUrl);
-  const [activeTitle, setActiveTitle] = useState(title || lessons[0].title);
+  const [isLiked, setIsLiked] = useState(false);
+  const iframeRef = useRef(null);
 
-  const handleSelectLesson = (lesson) => {
-    setActiveVideo(lesson.videoUrl);
-    setActiveTitle(lesson.title);
+  const handleBookmark = () => {
+    setIsBookmarked(prev => {
+      const next = !prev;
+      try {
+        const saved = JSON.parse(localStorage.getItem('lms_bookmarks') || '[]');
+        const updated = next
+          ? [...new Set([...saved, courseId])]
+          : saved.filter(id => id !== courseId);
+        localStorage.setItem('lms_bookmarks', JSON.stringify(updated));
+      } catch (err) {
+        console.error('Bookmark save failed:', err);
+      }
+      return next;
+    });
   };
 
+  const handleLike = () => setIsLiked(prev => !prev);
+
+  // Build a proper embed URL with privacy-enhanced mode
+  const embedUrl = videoUrl
+    ? `${videoUrl}?rel=0&modestbranding=1&enablejsapi=1`
+    : null;
+
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', width: '100%', marginBottom: '25px' }}>
-
-      {/* Left: Interactive Video Player */}
-      <div style={{ flex: 2, minWidth: '300px' }}>
-        <h2 style={{ marginBottom: '12px', fontSize: '1.25rem', color: '#fff' }}>Now Playing: {activeTitle}</h2>
-        <video
-          controls
-          autoPlay
-          src={activeVideo}
-          style={{ width: '100%', borderRadius: '12px', background: '#000', maxHeight: '420px', outline: 'none', border: '1px solid #23263b' }}
-        />
-        <p style={{ marginTop: '8px', color: '#a0aec0', fontSize: '0.85rem' }}>Status: Stable React component media stream active.</p>
+    <section className="video-player" aria-label={`Video player: ${title}`}>
+      {/* Thin progress bar */}
+      <div className="video-player__progress" aria-hidden="true">
+        <div className="video-player__progress-fill"></div>
       </div>
 
-      {/* Right: Clickable Lesson Syllabus Stream */}
-      <div style={{ flex: 1, minWidth: '250px', background: '#141622', padding: '16px', borderRadius: '12px', border: '1px solid #23263b', maxHeight: '420px', overflowY: 'auto' }}>
-        <h3 style={{ fontSize: '1rem', color: '#fff', marginBottom: '12px' }}>Course Curriculum</h3>
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {lessons.map((lesson) => (
-            <li
-              key={lesson.id}
-              onClick={() => handleSelectLesson(lesson)}
-              style={{
-                padding: '10px 12px',
-                background: activeTitle === lesson.title ? '#1e2235' : '#141622',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                border: activeTitle === lesson.title ? '1px solid #6366f1' : '1px solid #23263b',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <span style={{ fontSize: '0.85rem', color: '#fff' }}>▶ {lesson.title}</span>
-              <span style={{ color: '#8c92ac', fontSize: '0.75rem' }}>10:00</span>
-            </li>
-          ))}
-        </ul>
+      {/* iFrame embed */}
+      <div className="video-player__frame-wrapper">
+        {embedUrl ? (
+          <iframe
+            ref={iframeRef}
+            className="video-player__iframe"
+            src={embedUrl}
+            title={title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+          />
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--clr-text-muted)', fontSize: '0.9rem' }}>
+            No video available
+          </div>
+        )}
       </div>
 
-    </div>
+      {/* Controls bar */}
+      <div className="video-player__controls">
+        <h2 className="video-player__title">{title}</h2>
+        <div className="video-player__actions">
+          <button
+            className={`video-player__action-btn${isLiked ? ' active' : ''}`}
+            onClick={handleLike}
+            aria-pressed={isLiked}
+            aria-label={isLiked ? 'Unlike this course' : 'Like this course'}
+          >
+            {isLiked ? '❤️' : '🤍'} {isLiked ? 'Liked' : 'Like'}
+          </button>
+          <button
+            className={`video-player__action-btn${isBookmarked ? ' active' : ''}`}
+            onClick={handleBookmark}
+            aria-pressed={isBookmarked}
+            aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark this course'}
+          >
+            {isBookmarked ? '🔖' : '📌'} {isBookmarked ? 'Saved' : 'Save'}
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
+
+export default VideoPlayer;
