@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  // Clean default stats (reset to 0 for presentation)
   const [stats, setStats] = useState(() => {
     const savedStats = localStorage.getItem('learnforge_user_stats');
     return savedStats ? JSON.parse(savedStats) : {
@@ -13,19 +12,8 @@ export default function Dashboard() {
       bookmarksCount: 0,
       badgesCount: 2,
       courses: [
-        { 
-          id: '1', 
-          title: 'Advanced CSS3: Flexbox, Grid & Animations', 
-          progress: 0, 
-          // Using a reliable SVG/data URI placeholder so images never break or fail to load
-          image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%236366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>'
-        },
-        { 
-          id: '2', 
-          title: 'Node.js & Express: REST API Masterclass', 
-          progress: 0, 
-          image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>'
-        }
+        { id: '1', title: 'Advanced CSS3: Flexbox, Grid & Animations', progress: 0 },
+        { id: '2', title: 'Node.js & Express: REST API Masterclass', progress: 0 }
       ]
     };
   });
@@ -40,55 +28,50 @@ export default function Dashboard() {
       {/* Welcome Banner */}
       <div style={{ marginBottom: '35px' }}>
         <p style={{ color: '#a0aec0', fontSize: '15px', marginBottom: '8px' }}>Welcome back 👋</p>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: '800', fontFamily: 'var(--font-display, sans-serif)' }}>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: '800' }}>
           Spider's <span style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Dashboard</span>
         </h1>
         <p style={{ color: '#8c92ac', marginTop: '6px', fontSize: '15px' }}>Keep up the great work! You're making fantastic progress.</p>
       </div>
 
-      {/* Top Stat Cards with Icons */}
+      {/* Top Stat Cards */}
       <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '45px' }}>
-        
-        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
+        <div style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
           <div style={{ fontSize: '20px', marginBottom: '12px' }}>📚</div>
           <h3 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '4px' }}>{stats.enrolledCount}</h3>
-          <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em' }}>ENROLLED</p>
+          <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600' }}>ENROLLED</p>
         </div>
-
-        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
+        <div style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
           <div style={{ fontSize: '20px', marginBottom: '12px' }}>⏱️</div>
           <h3 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '4px' }}>{stats.hoursLearned}h</h3>
-          <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em' }}>HOURS LEARNED</p>
+          <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600' }}>HOURS LEARNED</p>
         </div>
-
-        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
+        <div style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
           <div style={{ fontSize: '20px', marginBottom: '12px' }}>🔖</div>
           <h3 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '4px' }}>{stats.bookmarksCount}</h3>
-          <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em' }}>BOOKMARKS</p>
+          <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600' }}>BOOKMARKS</p>
         </div>
-
-        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
+        <div style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
           <div style={{ fontSize: '20px', marginBottom: '12px' }}>🏆</div>
           <h3 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '4px' }}>{stats.badgesCount}</h3>
-          <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em' }}>BADGES</p>
+          <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600' }}>BADGES</p>
         </div>
-
       </div>
 
-      {/* My Courses Section Header */}
+      {/* Courses Header */}
       <h2 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
         <span>🎓</span> My Courses
       </h2>
 
       {/* Courses List */}
-      <div className="courses-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {stats.courses.map((course) => (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {stats.courses.map((course, idx) => (
           <div 
             key={course.id} 
             onClick={() => navigate(`/course/${course.id}`)}
             style={{ 
               background: '#141622', 
-              padding: '18px 24px', 
+              padding: '20px 24px', 
               borderRadius: '16px', 
               border: '1px solid #23263b', 
               cursor: 'pointer',
@@ -102,12 +85,8 @@ export default function Dashboard() {
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div style={{ width: '48px', height: '48px', background: '#1e2235', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', border: '1px solid #323854' }}>
-                  <img 
-                    src={course.image} 
-                    alt={course.title} 
-                    style={{ width: '24px', height: '24px', objectFit: 'contain' }} 
-                  />
+                <div style={{ width: '42px', height: '42px', background: '#1e2235', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', border: '1px solid #323854' }}>
+                  {idx === 0 ? '💻' : '⚡'}
                 </div>
                 <span style={{ fontWeight: '600', fontSize: '1rem', color: '#fff' }}>{course.title}</span>
               </div>
@@ -118,7 +97,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Progress Bar */}
             <div style={{ background: '#1e2235', height: '6px', borderRadius: '3px', overflow: 'hidden', width: '100%' }}>
               <div style={{ width: `${course.progress}%`, background: 'linear-gradient(90deg, #6366f1, #a855f7)', height: '100%', transition: 'width 0.4s ease' }} />
             </div>
