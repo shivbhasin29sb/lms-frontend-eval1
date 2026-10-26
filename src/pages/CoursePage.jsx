@@ -1,18 +1,17 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import VideoPlayer from '../components/VideoPlayer';
 import CourseCard from '../components/CourseCard';
 import useFetch from '../hooks/useFetch';
 
-// --- NEW FIREBASE IMPORTS ---
+// --- FIREBASE IMPORTS ---
 import { auth, db } from '../firebase/firebaseConfig';
 import { doc, setDoc, getDoc, arrayUnion } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-// ----------------------------
 
 import './CoursePage.css';
 
-// ── Mock curriculum lessons ───────────────────────────────────
+// ── Curriculum Generator ───────────────────────────────────
 function generateCurriculum(lessonCount) {
   const topics = [
     'Introduction & Setup', 'Core Concepts', 'Deep Dive: Part 1',
@@ -20,11 +19,11 @@ function generateCurriculum(lessonCount) {
     'Real-World Patterns', 'Performance & Optimization', 'Testing',
     'Deployment & CI/CD',
   ];
-  const count = Math.min(lessonCount, 10);
+  const count = Math.min(lessonCount || 10, 10);
   return Array.from({ length: count }, (_, i) => ({
     num: i + 1,
     title: topics[i % topics.length],
-    duration: `${8 + (i * 3) % 15}:${String((i * 7) % 60).padStart(2, '0')}`,
+    duration: '10:00',
     isPreview: i === 0,
   }));
 }
@@ -40,11 +39,10 @@ function CoursePage() {
     return courses.find(c => c.id === id) ?? null;
   }, [courses, id]);
 
-  // --- NEW FIREBASE: Check enrollment status from the Cloud ---
+  // --- FIREBASE: Check enrollment status from Cloud ---
   useEffect(() => {
     if (!course) return;
 
-    // Listen for the logged-in user
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const userRef = doc(db, 'users', user.uid);
@@ -63,7 +61,7 @@ function CoursePage() {
     return () => unsubscribe();
   }, [course]);
 
-  // --- NEW FIREBASE: Save enrollment to the Cloud ---
+  // --- FIREBASE: Save enrollment to Cloud ---
   const handleEnroll = async () => {
     if (!course) return;
 
@@ -75,7 +73,6 @@ function CoursePage() {
 
     try {
       const userRef = doc(db, 'users', user.uid);
-      // setDoc with merge:true creates the document if it doesn't exist yet
       await setDoc(userRef, {
         enrolledCourses: arrayUnion(course.id)
       }, { merge: true });
@@ -87,7 +84,7 @@ function CoursePage() {
     }
   };
 
-  // Related courses (same category, excluding current)
+  // Related courses
   const relatedCourses = useMemo(() => {
     if (!courses || !course) return [];
     return courses.filter(c => c.category === course.category && c.id !== id).slice(0, 3);
@@ -102,7 +99,6 @@ function CoursePage() {
     ? course.instructor.split(' ').map(n => n[0]).slice(0, 2).join('')
     : '';
 
-  /* ── Render states ── */
   if (loading) {
     return (
       <div className="course-page page-enter">
@@ -155,12 +151,12 @@ function CoursePage() {
           <span className="course-page__breadcrumb-current">{course.title}</span>
         </nav>
 
-        {/* Main layout: player + info | sidebar */}
+        {/* Main layout */}
         <div className="course-page__layout">
 
           {/* ── Main column ── */}
           <div className="course-page__main">
-            {/* Video Player */}
+            {/* Video Player Component */}
             <VideoPlayer
               videoUrl={course.videoUrl}
               title={course.title}
@@ -249,10 +245,9 @@ function CoursePage() {
                   Enroll Now — It's Free
                 </button>
               )}
-
             </div>
 
-            {/* Curriculum */}
+            {/* Curriculum (Sidebar Widget) */}
             <div className="curriculum-card">
               <header className="curriculum-card__header">
                 <span aria-hidden="true">📋</span> Course Curriculum
