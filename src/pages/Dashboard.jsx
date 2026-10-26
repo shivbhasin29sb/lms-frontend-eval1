@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useFetch from '../hooks/useFetch';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { data: courses } = useFetch('/data/data.json');
 
-  // Clean default stats (reset to 0.0h and 0% for presentation)
+  // Clean default stats (reset to 0 for presentation)
   const [stats, setStats] = useState(() => {
     const savedStats = localStorage.getItem('learnforge_user_stats');
     return savedStats ? JSON.parse(savedStats) : {
@@ -15,30 +13,30 @@ export default function Dashboard() {
       bookmarksCount: 0,
       badgesCount: 2,
       courses: [
-        {
-          id: '1',
-          title: 'Advanced CSS3: Flexbox, Grid & Animations',
-          progress: 0,
-          image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=200&q=80'
+        { 
+          id: '1', 
+          title: 'Advanced CSS3: Flexbox, Grid & Animations', 
+          progress: 0, 
+          // Using a reliable SVG/data URI placeholder so images never break or fail to load
+          image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%236366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>'
         },
-        {
-          id: '2',
-          title: 'Node.js & Express: REST API Masterclass',
-          progress: 0,
-          image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=200&q=80'
+        { 
+          id: '2', 
+          title: 'Node.js & Express: REST API Masterclass', 
+          progress: 0, 
+          image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>'
         }
       ]
     };
   });
 
-  // Save changes to localStorage whenever stats update
   useEffect(() => {
     localStorage.setItem('learnforge_user_stats', JSON.stringify(stats));
   }, [stats]);
 
   return (
     <div className="dashboard-container" style={{ padding: '40px 60px', background: '#0a0b10', color: '#fff', minHeight: '100vh' }}>
-
+      
       {/* Welcome Banner */}
       <div style={{ marginBottom: '35px' }}>
         <p style={{ color: '#a0aec0', fontSize: '15px', marginBottom: '8px' }}>Welcome back 👋</p>
@@ -50,30 +48,26 @@ export default function Dashboard() {
 
       {/* Top Stat Cards with Icons */}
       <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '45px' }}>
-
-        {/* Enrolled Card */}
-        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b', position: 'relative' }}>
+        
+        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
           <div style={{ fontSize: '20px', marginBottom: '12px' }}>📚</div>
           <h3 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '4px' }}>{stats.enrolledCount}</h3>
           <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em' }}>ENROLLED</p>
         </div>
 
-        {/* Hours Learned Card */}
-        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b', position: 'relative' }}>
+        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
           <div style={{ fontSize: '20px', marginBottom: '12px' }}>⏱️</div>
           <h3 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '4px' }}>{stats.hoursLearned}h</h3>
           <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em' }}>HOURS LEARNED</p>
         </div>
 
-        {/* Bookmarks Card */}
-        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b', position: 'relative' }}>
+        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
           <div style={{ fontSize: '20px', marginBottom: '12px' }}>🔖</div>
           <h3 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '4px' }}>{stats.bookmarksCount}</h3>
           <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em' }}>BOOKMARKS</p>
         </div>
 
-        {/* Badges Card */}
-        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b', position: 'relative' }}>
+        <div className="stat-card" style={{ background: '#141622', padding: '24px', borderRadius: '16px', border: '1px solid #23263b' }}>
           <div style={{ fontSize: '20px', marginBottom: '12px' }}>🏆</div>
           <h3 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '4px' }}>{stats.badgesCount}</h3>
           <p style={{ color: '#8c92ac', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em' }}>BADGES</p>
@@ -89,14 +83,14 @@ export default function Dashboard() {
       {/* Courses List */}
       <div className="courses-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {stats.courses.map((course) => (
-          <div
-            key={course.id}
+          <div 
+            key={course.id} 
             onClick={() => navigate(`/course/${course.id}`)}
-            style={{
-              background: '#141622',
-              padding: '18px 24px',
-              borderRadius: '16px',
-              border: '1px solid #23263b',
+            style={{ 
+              background: '#141622', 
+              padding: '18px 24px', 
+              borderRadius: '16px', 
+              border: '1px solid #23263b', 
               cursor: 'pointer',
               display: 'flex',
               flexDirection: 'column',
@@ -106,14 +100,15 @@ export default function Dashboard() {
             onMouseEnter={(e) => e.currentTarget.style.borderColor = '#6366f1'}
             onMouseLeave={(e) => e.currentTarget.style.borderColor = '#23263b'}
           >
-            {/* Top row: Thumbnail + Title + Progress % + Arrow */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <img
-                  src={course.image}
-                  alt={course.title}
-                  style={{ width: '64px', height: '40px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #23263b' }}
-                />
+                <div style={{ width: '48px', height: '48px', background: '#1e2235', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', border: '1px solid #323854' }}>
+                  <img 
+                    src={course.image} 
+                    alt={course.title} 
+                    style={{ width: '24px', height: '24px', objectFit: 'contain' }} 
+                  />
+                </div>
                 <span style={{ fontWeight: '600', fontSize: '1rem', color: '#fff' }}>{course.title}</span>
               </div>
 
