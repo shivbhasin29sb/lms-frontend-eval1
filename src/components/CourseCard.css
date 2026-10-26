@@ -44,7 +44,7 @@
 .course-card__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.7) 100%);
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.7) 100%);
   opacity: 0;
   display: flex;
   align-items: center;
@@ -52,7 +52,9 @@
   transition: opacity var(--transition-base);
 }
 
-.course-card:hover .course-card__overlay { opacity: 1; }
+.course-card:hover .course-card__overlay {
+  opacity: 1;
+}
 
 .course-card__play-btn {
   display: flex;
@@ -64,12 +66,14 @@
   border-radius: 50%;
   color: #fff;
   font-size: 1.3rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   transform: scale(0.8);
   transition: transform var(--transition-base);
 }
 
-.course-card:hover .course-card__play-btn { transform: scale(1); }
+.course-card:hover .course-card__play-btn {
+  transform: scale(1);
+}
 
 .course-card__level-badge {
   position: absolute;
@@ -102,6 +106,7 @@
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
